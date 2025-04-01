@@ -31,6 +31,7 @@
     "strapi-plugin-translate": "*",
     "strapi-provider-translate-deepl": "*",
     "strapi-provider-translate-libretranslate": "*",
+    "strapi-provider-translate-alimt": "*",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
