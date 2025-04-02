@@ -30,17 +30,13 @@ export interface ReportData {
   locales: Locale[]
 }
 
-export interface TotalRows {
-  rows: {
-    locale: string
-    count: string
-  }[]
-}
+export type TotalRows ={
+  locale: string
+  count: string
+}[]
 
-export interface TranslatedCountsRows {
-  rows: {
-    source: string
-    target: string
-    count: string
-  }[]
-}
+export type TranslatedCountsRows = {
+  source: string
+  target: string
+  count: string
+}[]

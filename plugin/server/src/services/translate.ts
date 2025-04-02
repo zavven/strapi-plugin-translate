@@ -267,26 +267,27 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
       const collectionName = strapi.contentTypes[contentType].collectionName
 
       // use raw query to get the total of documents group by locale
-      const { rows: totalRows } = await strapi.db.connection.raw<TotalRows>(`
-        SELECT locale, COUNT(*) as count 
-        FROM ${collectionName}
-        WHERE published_at IS NULL 
-        GROUP BY locale
-      `);
+      const totalRows: TotalRows = await strapi.db
+        .connection(collectionName)
+        .select('locale')
+        .count('* as count')
+        .whereNull('published_at')
+        .groupBy('locale');
       const totalMap = new Map(totalRows.map(row => [row.locale, parseInt(row.count)]));
       const totals = locales.map(({ code }) => totalMap.get(code) || 0);
 
       // use raw query to get the count of translated documents group by source and target locale
-      const { rows: translatedCountsRows } = await strapi.db.connection.raw<TranslatedCountsRows>(`
-        SELECT t1.locale as source, t2.locale as target, COUNT(*) as count
-        FROM ${collectionName} t1
-        JOIN ${collectionName} t2
-        ON t1.document_id = t2.document_id
-          AND t1.locale != t2.locale
-        WHERE t1.published_at IS NULL
-          AND t2.published_at IS NULL
-        GROUP BY t1.locale, t2.locale
-      `);
+      const translatedCountsRows: TranslatedCountsRows = await strapi.db
+        .connection({ t1: collectionName })
+        .select('t1.locale as source', 't2.locale as target')
+        .count('* as count')
+        .join({ t2: collectionName }, function () {
+          this.on('t1.document_id', '=', 't2.document_id')
+            .andOn('t1.locale', '!=', 't2.locale')
+            .andOnNull('t1.published_at')
+            .andOnNull('t2.published_at');
+        })
+        .groupBy('t1.locale', 't2.locale');
       const translatedCountsMap = new Map();
       translatedCountsRows.forEach(row => {
         translatedCountsMap.set(`${row.source}-${row.target}`, parseInt(row.count));
