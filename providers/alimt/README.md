@@ -49,3 +49,8 @@ Note that environment variables take precedence over values `providerOptions`. T
 
 - Only the [alimt supported languages](https://help.aliyun.com/zh/machine-translation/support/supported-languages-and-codes) can be translated
 - The API-Limits of Alimt ([see](https://help.aliyun.com/zh/machine-translation/developer-reference/limits)) should be respected. If one field is larger than the request size limit, the content needs to be split and merged at some character, which may break the content layout!
+
+## Quick Links
+
+- [ErrorCode](https://api.aliyun.com/document/alimt/2018-10-12/errorCode)
+- [Usage](https://mt.console.aliyun.com/service)
