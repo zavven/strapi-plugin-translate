@@ -51,7 +51,8 @@ export class Client {
       targetLanguage,
       formatType,
       scene: 'general',
-      apiType: 'translate_standard', // TODO 后续可作为配置项
+      // FIXME: This should be configurable
+      apiType: 'translate_standard',
     });
     try {
       const res = await this.client.getBatchTranslate(translateGeneralRequest);

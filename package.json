@@ -9,6 +9,8 @@
     "playground"
   ],
   "scripts": {
+    "develop": "cd playground && npm run develop",
+    "build:plugin": "cd plugin && npm run build",
     "semantic-release": "semantic-release",
     "commit": "cz",
     "test": "jest",

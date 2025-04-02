@@ -18,7 +18,7 @@ export default factories.createCoreService(
           },
         })
         if (firstResult) {
-          return super.update(firstResult.id, {
+          return super.update(firstResult.documentId, {
             data: {
               localesWithUpdates: Array.from(
                 new Set([
@@ -37,5 +37,9 @@ export default factories.createCoreService(
         console.error(e)
       }
     },
+    async delete(id: string, params: object) {
+      const ids = typeof id ? id.split(',') : []
+      return Promise.all(ids.map((id) => super.delete(id, params)))
+    }
   })
 )

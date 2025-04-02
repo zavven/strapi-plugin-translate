@@ -61,8 +61,7 @@ const bootstrap: Core.Plugin['bootstrap'] = async ({ strapi }) => {
         )
       ) {
         setTimeout(() => {
-          strapi
-            .documents('plugin::translate.updated-entry')
+          getService('updated-entry')
             .create({
               data: {
                 contentType: event.model.uid,
