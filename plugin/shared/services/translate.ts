@@ -61,6 +61,8 @@ export interface TranslateService {
   batchUpdate: (params: {
     updatedEntryIDs: Data.DocumentID[]
     sourceLocale: string
+    targetLocales?: string[]
+    publish?: boolean
   }) => Promise<{ result: 'success' }>
   contentTypes: () => Promise<ReportData>
 }

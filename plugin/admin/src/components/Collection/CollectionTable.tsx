@@ -1,14 +1,21 @@
 import React, { memo, useState, useEffect } from 'react'
-import { Field, Table, Tbody } from '@strapi/design-system'
+import {
+  Field,
+  SingleSelect,
+  SingleSelectOption,
+  MultiSelect,
+  MultiSelectOption,
+  Table,
+  Tbody,
+  Button,
+  Toggle,
+  Flex,
+  Typography,
+  Modal,
+} from '@strapi/design-system'
 import { Box } from '@strapi/design-system'
-import { Modal } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
-import { Flex } from '@strapi/design-system'
-import { Typography } from '@strapi/design-system'
 import { WarningCircle } from '@strapi/icons'
-import { SingleSelect, SingleSelectOption } from '@strapi/design-system'
-import { Button } from '@strapi/design-system'
-import { Toggle } from '@strapi/design-system'
 import useCollection from '../../Hooks/useCollection'
 import { getTranslation } from '../../utils'
 import useUsage from '../../Hooks/useUsage'
@@ -55,6 +62,7 @@ const CollectionTable = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState<string | null>(null)
+  const [targetLocales, setTargetLocales] = useState<string[]>()
   const [sourceLocale, setSourceLocale] = useState<string | null>(
     locales.find((l) => l.isDefault)?.code || null
   )
@@ -102,6 +110,8 @@ const CollectionTable = () => {
     collection,
   }: HandleActionProps) => {
     setTargetLocale(targetLocale || null)
+    setTargetLocales([])
+    setSourceLocale(locales.find((l) => l.isDefault)?.code || null)
     setCollection(collection)
     setAction(action)
     handleToggleDialog()
@@ -216,6 +226,8 @@ const CollectionTable = () => {
           await startUpdate({
             updatedEntryIDs: selectedUpdateIDs,
             sourceLocale,
+            targetLocales: targetLocales?.length ? targetLocales : undefined,
+            autoPublish,
           })
           break
         default:
@@ -226,6 +238,7 @@ const CollectionTable = () => {
       handleToggleDialog()
       setSourceLocale(null)
       setTargetLocale(null)
+      setTargetLocales([])
       setCollection(null)
       setAction(null)
     } catch (error) {
@@ -381,6 +394,51 @@ const CollectionTable = () => {
                           )
                         })}
                       </SingleSelect>
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>
+                        {formatMessage({
+                          id: getTranslation('batch-update.targetLocales'),
+                        })}
+                      </Field.Label>
+                      <MultiSelect
+                        onChange={setTargetLocales}
+                        value={targetLocales}
+                      >
+                        {locales.map(({ name, code }) => {
+                          return (
+                            <MultiSelectOption key={code} value={code}>
+                              {name}
+                            </MultiSelectOption>
+                          )
+                        })}
+                      </MultiSelect>
+                    </Field.Root>
+                    <Field.Root
+                      name="auto-publish"
+                      hint={formatMessage({
+                        id: getTranslation(
+                          'batch-translate.dialog.translate.autoPublish.hint'
+                        ),
+                        defaultMessage:
+                          'Publish translated entities automatically',
+                      })}
+                    >
+                      <Field.Label>
+                        {formatMessage({
+                          id: getTranslation(
+                            'batch-translate.dialog.translate.autoPublish.label'
+                          ),
+                          defaultMessage: 'Auto-Publish',
+                        })}
+                      </Field.Label>
+                      <Toggle
+                        onLabel="True"
+                        offLabel="False"
+                        checked={autoPublish}
+                        onChange={toggleAutoPublish}
+                      />
+                      <Field.Hint />
                     </Field.Root>
                     <BatchUpdateTable
                       updates={updates.filter(

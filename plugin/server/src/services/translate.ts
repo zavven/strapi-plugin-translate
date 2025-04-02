@@ -217,7 +217,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         fields: ['locale'],
         locale: '*',
       })
-      const targetLocales: string[] = entities
+      const targetLocales: string[] = params.targetLocales || entities
         .map((entity) => entity.locale)
         .filter((locale) => locale !== sourceLocale)
 
@@ -236,8 +236,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
           targetLocale,
           create: true,
           updateExisting: true,
-          // FIXME: This should be configurable
-          publish: false,
+          publish: params.publish || false,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
         })
       }

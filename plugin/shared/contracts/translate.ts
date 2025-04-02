@@ -124,7 +124,9 @@ export declare namespace TranslateBatchUpdate {
     query: {}
     body: {
       sourceLocale: string
+      targetLocales?: string[]
       updatedEntryIDs: Data.DocumentID[]
+      autoPublish?: boolean
     }
   }
 
