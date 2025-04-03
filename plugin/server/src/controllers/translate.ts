@@ -42,6 +42,8 @@ const batchTranslateBodySchema = z.object({
 const batchUpdateBodySchema = z.object({
   sourceLocale: z.string(),
   updatedEntryIDs: z.array(z.string()),
+  targetLocales: z.array(z.string()).optional(),
+  autoPublish: z.boolean().optional(),
 })
 
 const usageEstimateBodySchema = z.object({
@@ -216,12 +218,14 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
-    const { updatedEntryIDs, sourceLocale } = data
+    const { updatedEntryIDs, sourceLocale, targetLocales, autoPublish } = data
 
     ctx.body = {
       data: await getService('translate').batchUpdate({
         updatedEntryIDs,
         sourceLocale,
+        targetLocales,
+        autoPublish,
       }),
     }
   },

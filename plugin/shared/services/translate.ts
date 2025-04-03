@@ -62,7 +62,7 @@ export interface TranslateService {
     updatedEntryIDs: Data.DocumentID[]
     sourceLocale: string
     targetLocales?: string[]
-    publish?: boolean
+    autoPublish?: boolean
   }) => Promise<{ result: 'success' }>
   contentTypes: () => Promise<ReportData>
 }

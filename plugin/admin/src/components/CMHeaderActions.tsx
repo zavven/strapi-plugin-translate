@@ -1,5 +1,5 @@
 import { Button, Dialog, Flex, Typography } from '@strapi/design-system'
-import { Earth, WarningCircle } from '@strapi/icons'
+import { WarningCircle } from '@strapi/icons'
 import {
   unstable_useDocument as useDocument,
   useQueryParams,
@@ -21,6 +21,7 @@ import { unset } from 'lodash'
 import useUsage from '../Hooks/useUsage'
 import useAlert from '../Hooks/useAlert'
 import { FieldSelection, FieldToggle } from './common'
+import PluginIcon from './PluginIcon'
 
 interface I18nBaseQuery {
   plugins?: {
@@ -37,6 +38,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   model,
   collectionType,
   document,
+  activeTab,
 }: HeaderActionProps) => {
   const { formatMessage } = useIntl()
   const [{ query }] = useQueryParams<I18nBaseQuery>()
@@ -66,6 +68,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const [localeSelected, setLocaleSelected] = useState<string | null>(null)
   const [autoPublish, setAutoPublish] = useState(false)
   const [autoCreate, setAutoCreate] = useState(false)
+  const [updateExisting, setUpdateExisting] = useState(false)
 
   useEffect(() => {
     const defaultLocale = availableLocales.find(
@@ -116,9 +119,9 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
       contentType: model as UID.ContentType,
       sourceLocale: localeSelected,
       targetLocale: currentDesiredLocale,
-      publish: autoPublish,
       create: autoCreate,
-      updateExisting: true,
+      publish: autoPublish,
+      updateExisting,
     })
     if ('error' in response) {
       handleNotification({
@@ -174,8 +177,8 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
 
   return {
     type: 'icon',
-    icon: <Earth />,
-    disabled: availableLocales.length === 0,
+    icon: <PluginIcon />,
+    disabled: activeTab === 'published' || availableLocales.length === 0,
     label: formatMessage({
       id: getTranslation('CMEditViewTranslateLocale.translate-text'),
       defaultMessage: 'Translate from another locale',
@@ -221,31 +224,14 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
                 })}
               />
 
-              <FieldToggle
-                checked={autoPublish}
-                onChange={setAutoPublish}
-                hint={formatMessage({
-                  id: getTranslation(
-                    'batch-translate.dialog.translate.autoPublish.hint'
-                  ),
-                  defaultMessage: 'Publish translated entities automatically',
-                })}
-                label={formatMessage({
-                  id: getTranslation(
-                    'batch-translate.dialog.translate.autoPublish.label'
-                  ),
-                  defaultMessage: 'Auto-Publish',
-                })}
-              />
-
-              <FieldToggle
+              {/* <FieldToggle
                 checked={autoCreate}
                 onChange={setAutoCreate}
                 hint={formatMessage({
                   id: getTranslation(
                     'translate-entity.dialog.field.autoCreate.hint'
                   ),
-                  defaultMessage: 'Create translated entities automatically',
+                  defaultMessage: 'Create translated entity automatically',
                 })}
                 label={formatMessage({
                   id: getTranslation(
@@ -254,6 +240,42 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
                   defaultMessage: 'Auto-Create',
                 })}
               />
+
+              <FieldToggle
+                checked={autoPublish}
+                onChange={setAutoPublish}
+                hint={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.field.autoPublish.hint'
+                  ),
+                  defaultMessage:
+                    'Publish translated entity automatically while its auto created or existing',
+                })}
+                label={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.field.autoPublish.label'
+                  ),
+                  defaultMessage: 'Auto-Publish',
+                })}
+              />
+
+              <FieldToggle
+                checked={updateExisting}
+                onChange={setUpdateExisting}
+                hint={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.field.updateExisting.hint'
+                  ),
+                  defaultMessage:
+                    'Update translated entity automatically while its existing',
+                })}
+                label={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.field.updateExisting.label'
+                  ),
+                  defaultMessage: 'Update Existing',
+                })}
+              /> */}
 
               {expectedCost && usage != null && (
                 <Typography>

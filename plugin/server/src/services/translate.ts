@@ -236,7 +236,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
           targetLocale,
           create: true,
           updateExisting: true,
-          publish: params.publish || false,
+          publish: params.autoPublish || false,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
         })
       }

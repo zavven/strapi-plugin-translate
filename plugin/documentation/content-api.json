@@ -110,7 +110,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TranslateUpdatedEntryRequest"
+                "$ref": "#/components/schemas/TranslateEntityRequest"
               }
             }
           }
@@ -120,7 +120,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
                 }
               }
             }
@@ -276,7 +281,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -316,7 +331,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                  "$ref": "#/components/schemas/TranslateUpdatedEntryDismissResponse"
                 }
               }
             }
@@ -372,78 +387,14 @@
               "targetLocale": {
                 "type": "string"
               },
-              "entityIds": {},
-              "status": {
-                "type": "string",
-                "enum": [
-                  "created",
-                  "setup",
-                  "running",
-                  "paused",
-                  "finished",
-                  "cancelled",
-                  "failed"
-                ]
-              },
-              "failureReason": {},
-              "progress": {
-                "type": "number",
-                "format": "float"
+              "entityIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "autoPublish": {
                 "type": "boolean"
-              },
-              "locale": {
-                "type": "string"
-              },
-              "localizations": {
-                "type": "array",
-                "items": {
-                  "oneOf": [
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
-                  "example": "string or id"
-                }
-              }
-            }
-          }
-        }
-      },
-      "TranslateBatchTranslateJobListResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TranslateBatchTranslateJob"
-            }
-          },
-          "meta": {
-            "type": "object",
-            "properties": {
-              "pagination": {
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "type": "integer",
-                    "minimum": 25
-                  },
-                  "pageCount": {
-                    "type": "integer",
-                    "maximum": 1
-                  },
-                  "total": {
-                    "type": "integer"
-                  }
-                }
               }
             }
           }
@@ -504,9 +455,6 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/TranslateBatchTranslateJob"
-          },
-          "meta": {
-            "type": "object"
           }
         }
       },
@@ -604,7 +552,7 @@
           }
         }
       },
-      "TranslateUpdatedEntryRequest": {
+      "TranslateEntityRequest": {
         "type": "object",
         "required": ["contentType", "sourceLocale", "targetLocale"],
         "properties": {
@@ -622,41 +570,44 @@
               },
               "documentId": {
                 "type": "string"
+              },
+              "publish": {
+                "type": "boolean"
+              },
+              "create": {
+                "type": "boolean"
+              },
+              "updateExisting": {
+                "type": "boolean"
               }
             }
           }
         }
       },
-      "TranslateUpdatedEntryListResponse": {
+      "TranslateUpdatedEntryRequest": {
         "type": "object",
+        "required": ["updatedEntryIDs", "sourceLocale"],
         "properties": {
           "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TranslateUpdatedEntry"
-            }
-          },
-          "meta": {
             "type": "object",
             "properties": {
-              "pagination": {
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "type": "integer"
-                  },
-                  "pageSize": {
-                    "type": "integer",
-                    "minimum": 25
-                  },
-                  "pageCount": {
-                    "type": "integer",
-                    "maximum": 1
-                  },
-                  "total": {
-                    "type": "integer"
-                  }
+              "sourceLocale": {
+                "type": "string"
+              },
+              "targetLocales": {
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
+              },
+              "updatedEntryIDs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "autoPublish": {
+                "type": "boolean"
               }
             }
           }
@@ -693,14 +644,22 @@
           }
         }
       },
-      "TranslateUpdatedEntryResponse": {
+      "TranslateUpdatedEntryListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslateUpdatedEntry"
+            }
+          }
+        }
+      },
+      "TranslateUpdatedEntryDismissResponse": {
         "type": "object",
         "properties": {
           "data": {
             "$ref": "#/components/schemas/TranslateUpdatedEntry"
-          },
-          "meta": {
-            "type": "object"
           }
         }
       }
