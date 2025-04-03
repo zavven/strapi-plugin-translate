@@ -26,6 +26,9 @@ const translateBodySchema = z.object({
   sourceLocale: z.string(),
   targetLocale: z.string(),
   contentType: z.string(),
+  create: z.boolean().optional(),
+  publish: z.boolean().optional(),
+  updateExisting: z.boolean().optional(),
 })
 
 const batchTranslateBodySchema = z.object({
@@ -83,7 +86,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
         contentType,
         sourceLocale,
         targetLocale,
-        create: false,
+        create: data.create || false,
+        publish: data.publish || false,
+        updateExisting: data.updateExisting || false,
         priority: TRANSLATE_PRIORITY_DIRECT_TRANSLATION,
       })
 

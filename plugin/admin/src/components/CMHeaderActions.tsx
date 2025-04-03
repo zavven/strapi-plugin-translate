@@ -1,12 +1,4 @@
-import {
-  Button,
-  Dialog,
-  Field,
-  Flex,
-  SingleSelect,
-  SingleSelectOption,
-  Typography,
-} from '@strapi/design-system'
+import { Button, Dialog, Flex, Typography } from '@strapi/design-system'
 import { Earth, WarningCircle } from '@strapi/icons'
 import {
   unstable_useDocument as useDocument,
@@ -28,6 +20,7 @@ import parseRelations from '../utils/parse-relations'
 import { unset } from 'lodash'
 import useUsage from '../Hooks/useUsage'
 import useAlert from '../Hooks/useAlert'
+import { FieldSelection, FieldToggle } from './common'
 
 interface I18nBaseQuery {
   plugins?: {
@@ -36,39 +29,6 @@ interface I18nBaseQuery {
       relatedEntityId?: Modules.Documents.ID
     }
   }
-}
-
-const LocaleSelection: React.FC<{
-  value: string | null
-  options: { value: string; label: string }[]
-  onChange: (locale: string) => void
-}> = ({ value, onChange, options }) => {
-  const { formatMessage } = useIntl()
-  return (
-    <Field.Root width="100%">
-      <Field.Label>
-        {formatMessage({
-          id: getTranslation('Settings.locales.modal.locales.label'),
-          defaultMessage: 'Locale',
-        })}
-      </Field.Label>
-      <SingleSelect
-        value={value}
-        placeholder={formatMessage({
-          id: getTranslation('CMEditViewCopyLocale.dialog.field.placeholder'),
-          defaultMessage: 'Select one locale...',
-        })}
-        // @ts-expect-error – the DS will handle numbers, but we're not allowing the API.
-        onChange={onChange}
-      >
-        {options.map((locale) => (
-          <SingleSelectOption key={locale.value} value={locale.value}>
-            {locale.label}
-          </SingleSelectOption>
-        ))}
-      </SingleSelect>
-    </Field.Root>
-  )
 }
 
 export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
@@ -104,6 +64,8 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
     : []
 
   const [localeSelected, setLocaleSelected] = useState<string | null>(null)
+  const [autoPublish, setAutoPublish] = useState(false)
+  const [autoCreate, setAutoCreate] = useState(false)
 
   useEffect(() => {
     const defaultLocale = availableLocales.find(
@@ -118,7 +80,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const [loading, setLoading] = useState<boolean>(false)
   const { estimateUsage, usage } = useUsage()
 
-  const handleLocaleChange = (value: string) => {
+  const handleLocaleChange = (value: string | null) => {
     setLocaleSelected(value)
     if (value && currentDesiredLocale && documentId) {
       estimateUsage({
@@ -154,6 +116,9 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
       contentType: model as UID.ContentType,
       sourceLocale: localeSelected,
       targetLocale: currentDesiredLocale,
+      publish: autoPublish,
+      create: autoCreate,
+      updateExisting: true,
     })
     if ('error' in response) {
       handleNotification({
@@ -234,14 +199,62 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
                 })}
               </Typography>
 
-              <LocaleSelection
+              <FieldSelection
+                multiple={false}
                 value={localeSelected}
                 onChange={handleLocaleChange}
                 options={availableLocales.map((locale) => ({
                   label: locale.name,
                   value: locale.code,
                 }))}
+                label={formatMessage({
+                  id: getTranslation(
+                    'CMEditViewCopyLocale.dialog.field.sourceLocale.label'
+                  ),
+                  defaultMessage: 'Source Locale',
+                })}
+                placeholder={formatMessage({
+                  id: getTranslation(
+                    'CMEditViewCopyLocale.dialog.field.sourceLocale.placeholder'
+                  ),
+                  defaultMessage: 'Select one locale...',
+                })}
               />
+
+              <FieldToggle
+                checked={autoPublish}
+                onChange={setAutoPublish}
+                hint={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.translate.autoPublish.hint'
+                  ),
+                  defaultMessage: 'Publish translated entities automatically',
+                })}
+                label={formatMessage({
+                  id: getTranslation(
+                    'batch-translate.dialog.translate.autoPublish.label'
+                  ),
+                  defaultMessage: 'Auto-Publish',
+                })}
+              />
+
+              <FieldToggle
+                checked={autoCreate}
+                onChange={setAutoCreate}
+                hint={formatMessage({
+                  id: getTranslation(
+                    'translate-entity.dialog.field.autoCreate.hint'
+                  ),
+                  defaultMessage: 'Create translated entities automatically',
+                })}
+                label={formatMessage({
+                  id: getTranslation(
+                    'translate-entity.dialog.field.autoCreate.label'
+                  ),
+                  defaultMessage: 'Auto-Create',
+                })}
+              />
+
               {expectedCost && usage != null && (
                 <Typography>
                   {formatMessage({

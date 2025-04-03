@@ -14,6 +14,9 @@ export declare namespace TranslateEntity {
       sourceLocale: string
       targetLocale: string
       contentType: UID.ContentType
+      create?: boolean
+      publish?: boolean
+      updateExisting?: boolean
     }
   }
 

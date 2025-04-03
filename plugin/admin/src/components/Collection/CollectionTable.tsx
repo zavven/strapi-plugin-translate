@@ -1,14 +1,8 @@
 import React, { memo, useState, useEffect } from 'react'
 import {
-  Field,
-  SingleSelect,
-  SingleSelectOption,
-  MultiSelect,
-  MultiSelectOption,
   Table,
   Tbody,
   Button,
-  Toggle,
   Flex,
   Typography,
   Modal,
@@ -32,6 +26,7 @@ import useAlert from '../../Hooks/useAlert'
 import { ActionType } from './actions'
 import useUpdateCollection from '../../Hooks/useUpdateCollection'
 import { BatchUpdateTable } from '../BatchUpdateTable'
+import { FieldToggle, FieldSelection } from '../common'
 
 type HandleActionProps = {
   action: ActionType
@@ -62,7 +57,7 @@ const CollectionTable = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState<string | null>(null)
-  const [targetLocales, setTargetLocales] = useState<string[]>()
+  const [targetLocales, setTargetLocales] = useState<string[]>([])
   const [sourceLocale, setSourceLocale] = useState<string | null>(
     locales.find((l) => l.isDefault)?.code || null
   )
@@ -125,10 +120,6 @@ const CollectionTable = () => {
   const handleSourceLocaleChange = (value: string | number) => {
     if (typeof value === 'string') setSourceLocale(value)
     else console.error('Invalid value')
-  }
-
-  const toggleAutoPublish = () => {
-    setAutoPublish(!autoPublish)
   }
 
   const dialogFieldMissing = (field: string) => {
@@ -296,31 +287,25 @@ const CollectionTable = () => {
                 </Flex>
                 {action === 'translate' && (
                   <>
-                    <Field.Root>
-                      <Field.Label>
-                        {formatMessage({
-                          id: getTranslation(
-                            'Settings.locales.modal.locales.label'
-                          ),
-                        })}
-                      </Field.Label>
-                      <SingleSelect
-                        onChange={handleSourceLocaleChange}
-                        value={sourceLocale}
-                      >
-                        {locales
-                          .filter((loc) => loc.code !== targetLocale)
-                          .map(({ name, code }) => {
-                            return (
-                              <SingleSelectOption key={code} value={code}>
-                                {name}
-                              </SingleSelectOption>
-                            )
-                          })}
-                      </SingleSelect>
-                    </Field.Root>
-                    <Field.Root
-                      name="auto-publish"
+                    <FieldSelection
+                      multiple={false}
+                      value={sourceLocale}
+                      onChange={setSourceLocale}
+                      options={locales
+                        .filter((loc) => loc.code !== targetLocale)
+                        .map((locale) => ({
+                          label: locale.name,
+                          value: locale.code,
+                        }))}
+                      label={formatMessage({
+                        id: getTranslation('batch-translate.sourceLocale'),
+                        defaultMessage: 'Source locale',
+                      })}
+                    />
+
+                    <FieldToggle
+                      checked={autoPublish}
+                      onChange={setAutoPublish}
                       hint={formatMessage({
                         id: getTranslation(
                           'batch-translate.dialog.translate.autoPublish.hint'
@@ -328,23 +313,14 @@ const CollectionTable = () => {
                         defaultMessage:
                           'Publish translated entities automatically',
                       })}
-                    >
-                      <Field.Label>
-                        {formatMessage({
-                          id: getTranslation(
-                            'batch-translate.dialog.translate.autoPublish.label'
-                          ),
-                          defaultMessage: 'Auto-Publish',
-                        })}
-                      </Field.Label>
-                      <Toggle
-                        onLabel="True"
-                        offLabel="False"
-                        checked={autoPublish}
-                        onChange={toggleAutoPublish}
-                      />
-                      <Field.Hint />
-                    </Field.Root>
+                      label={formatMessage({
+                        id: getTranslation(
+                          'batch-translate.dialog.translate.autoPublish.label'
+                        ),
+                        defaultMessage: 'Auto-Publish',
+                      })}
+                    />
+
                     {expectedCost != null && usage && (
                       <Typography>
                         {formatMessage({
@@ -372,50 +348,36 @@ const CollectionTable = () => {
                 )}
                 {action === 'update' && collection && (
                   <>
-                    <Field.Root>
-                      <Field.Label>
-                        {formatMessage({
-                          id: getTranslation('batch-update.sourceLocale'),
-                        })}
-                      </Field.Label>
-                      <SingleSelect
-                        onChange={(value) =>
-                          typeof value === 'string'
-                            ? setSourceLocale(value)
-                            : console.error('Invalid value')
-                        }
-                        value={sourceLocale}
-                      >
-                        {locales.map(({ name, code }) => {
-                          return (
-                            <SingleSelectOption key={code} value={code}>
-                              {name}
-                            </SingleSelectOption>
-                          )
-                        })}
-                      </SingleSelect>
-                    </Field.Root>
-                    <Field.Root>
-                      <Field.Label>
-                        {formatMessage({
-                          id: getTranslation('batch-update.targetLocales'),
-                        })}
-                      </Field.Label>
-                      <MultiSelect
-                        onChange={setTargetLocales}
-                        value={targetLocales}
-                      >
-                        {locales.map(({ name, code }) => {
-                          return (
-                            <MultiSelectOption key={code} value={code}>
-                              {name}
-                            </MultiSelectOption>
-                          )
-                        })}
-                      </MultiSelect>
-                    </Field.Root>
-                    <Field.Root
-                      name="auto-publish"
+                    <FieldSelection
+                      multiple={false}
+                      value={sourceLocale}
+                      onChange={setSourceLocale}
+                      options={locales.map((locale) => ({
+                        label: locale.name,
+                        value: locale.code,
+                      }))}
+                      label={formatMessage({
+                        id: getTranslation('batch-translate.sourceLocale'),
+                        defaultMessage: 'Source locale',
+                      })}
+                    />
+
+                    <FieldSelection
+                      multiple={true}
+                      value={targetLocales}
+                      onChange={setTargetLocales}
+                      options={locales.map((locale) => ({
+                        label: locale.name,
+                        value: locale.code,
+                      }))}
+                      label={formatMessage({
+                        id: getTranslation('batch-update.targetLocales'),
+                      })}
+                    />
+
+                    <FieldToggle
+                      checked={autoPublish}
+                      onChange={setAutoPublish}
                       hint={formatMessage({
                         id: getTranslation(
                           'batch-translate.dialog.translate.autoPublish.hint'
@@ -423,23 +385,14 @@ const CollectionTable = () => {
                         defaultMessage:
                           'Publish translated entities automatically',
                       })}
-                    >
-                      <Field.Label>
-                        {formatMessage({
-                          id: getTranslation(
-                            'batch-translate.dialog.translate.autoPublish.label'
-                          ),
-                          defaultMessage: 'Auto-Publish',
-                        })}
-                      </Field.Label>
-                      <Toggle
-                        onLabel="True"
-                        offLabel="False"
-                        checked={autoPublish}
-                        onChange={toggleAutoPublish}
-                      />
-                      <Field.Hint />
-                    </Field.Root>
+                      label={formatMessage({
+                        id: getTranslation(
+                          'batch-translate.dialog.translate.autoPublish.label'
+                        ),
+                        defaultMessage: 'Auto-Publish',
+                      })}
+                    />
+
                     <BatchUpdateTable
                       updates={updates.filter(
                         (update) =>
@@ -448,6 +401,7 @@ const CollectionTable = () => {
                       selectedUpdateIDs={selectedUpdateIDs}
                       setSelectedUpdateIDs={setSelectedUpdateIDs}
                     />
+
                     <Flex justifyContent="space-between">
                       <Button
                         onClick={() =>
