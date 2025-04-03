@@ -11,6 +11,7 @@
   "scripts": {
     "develop": "cd playground && npm run develop",
     "build:plugin": "cd plugin && npm run build",
+    "watch:plugin": "cd plugin && npm run watch",
     "semantic-release": "semantic-release",
     "commit": "cz",
     "test": "jest",

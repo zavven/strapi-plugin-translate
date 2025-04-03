@@ -1,14 +1,16 @@
-import { Main } from '@strapi/design-system'
+import { Layouts } from '@strapi/admin/strapi-admin'
 
 import PluginHeader from '../components/PluginHeader'
 import PluginPage from '../components/PluginPage'
 
 const HomePage = () => {
   return (
-    <Main>
+    <Layouts.Root>
       <PluginHeader />
-      <PluginPage />
-    </Main>
+      <Layouts.Content>
+        <PluginPage />
+      </Layouts.Content>
+    </Layouts.Root>
   )
 }
 

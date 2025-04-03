@@ -2,16 +2,62 @@ import React, { memo } from 'react'
 import { Tr, Td, Button } from '@strapi/design-system'
 import { Typography } from '@strapi/design-system'
 import { Flex } from '@strapi/design-system'
-import { Badge } from '@strapi/design-system'
+import { Tag } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
 import { IconButton, IconButtonGroup } from '@strapi/design-system'
 import { Tooltip } from '@strapi/design-system'
-import { Earth, Cross, Clock, Play } from '@strapi/icons'
+import { Earth, Cross, Clock, Play, WarningCircle } from '@strapi/icons'
 import PropTypes from 'prop-types'
 import { getTranslation } from '../../utils'
 import { ContentTypeTranslationReport } from '@shared/types/report'
 import { Locale } from '@shared/types/locale'
 import { ActionType } from './actions'
+import { styled } from 'styled-components'
+
+const WrapperTag = styled(Tag)`
+  color: ${({ theme }) => theme.colors.warning500};
+  border-color: ${({ theme }) => theme.colors.warning200};
+  background-color: ${({ theme }) => theme.colors.warning100};
+  > span {
+    border-right-color: ${({ theme }) => theme.colors.warning200};
+  }
+
+  &.complete {
+    color: ${({ theme }) => theme.colors.success500};
+    border-color: ${({ theme }) => theme.colors.success200};
+    background-color: ${({ theme }) => theme.colors.success100};
+    > span {
+      border-right-color: ${({ theme }) => theme.colors.success200};
+    }
+  }
+
+  .batch-translate-job-status {
+    &--created path {
+      fill: ${({ theme }) => theme.colors.alternative500};
+    }
+    &--setup path {
+      fill: ${({ theme }) => theme.colors.alternative500};
+    }
+    &--running path {
+      fill: ${({ theme }) => theme.colors.alternative500};
+    }
+    &--finished path {
+      fill: ${({ theme }) => theme.colors.success500};
+    }
+    &--cancelled path {
+      fill: ${({ theme }) => theme.colors.warning500};
+    }
+    &--failed path {
+      fill: ${({ theme }) => theme.colors.danger500};
+    }
+    &--paused path {
+      fill: ${({ theme }) => theme.colors.warning500};
+    }
+    &--null path {
+      fill: ${({ theme }) => theme.colors.neutral400};
+    }
+  }
+`
 
 interface CollectionRowProps {
   entry: ContentTypeTranslationReport
@@ -43,72 +89,29 @@ const CollectionRow = ({
         return (
           <Td key={locale.code} data-cy={`${entry.contentType}.${locale.code}`}>
             <Flex gap={3} direction="row">
-              <Typography textColor="neutral800">
-                {count}{' '}
-                {formatMessage({
-                  id: getTranslation(`batch-translate.table.entries`),
-                  defaultMessage: 'entries',
-                })}
-              </Typography>
-              <Flex wrap="wrap">
-                <Badge
-                  textColor="neutral100"
-                  backgroundColor={complete ? 'success500' : 'warning500'}
-                >
-                  {formatMessage({
-                    id: getTranslation(
-                      `batch-translate.table.complete.${complete}`
-                    ),
-                    defaultMessage: complete ? 'complete' : 'incomplete',
-                  })}
-                </Badge>
-                {job &&
-                  ([
-                    'created',
-                    'setup',
-                    'running',
-                    'paused',
-                    'finished',
-                  ].includes(job.status) ? (
-                    <Badge
-                      marginLeft={1}
-                      textColor="neutral100"
-                      backgroundColor={'success500'}
-                    >
-                      {formatMessage({
+              <WrapperTag
+                className={complete ? 'complete' : ''}
+                icon={
+                  <Tooltip
+                    label={
+                      job?.failureReason?.message ||
+                      formatMessage({
                         id: getTranslation(
-                          `batch-translate.table.job-status.${job.status}`
+                          `batch-translate.table.job-status.${job?.status || 'null'}`
                         ),
-                        defaultMessage: `Job ${job.status}`,
-                      })}
-                    </Badge>
-                  ) : (
-                    <Tooltip
-                      label={
-                        job.failureReason?.message ||
-                        formatMessage({
-                          id: getTranslation(`errors.unknown`),
-                          defaultMessage: 'Unknown error',
-                        })
-                      }
-                    >
-                      <div>
-                        <Badge
-                          marginLeft={1}
-                          textColor="neutral100"
-                          backgroundColor={'danger500'}
-                        >
-                          {formatMessage({
-                            id: getTranslation(
-                              `batch-translate.table.job-status.${job.status}`
-                            ),
-                            defaultMessage: `Job ${job.status}`,
-                          })}
-                        </Badge>
-                      </div>
-                    </Tooltip>
-                  ))}
-              </Flex>
+                        defaultMessage: `Job ${job?.status || 'null'}`,
+                      })
+                    }
+                  >
+                    <WarningCircle
+                      className={`batch-translate-job-status batch-translate-job-status--${job ? job.status : 'null'}`}
+                    />
+                  </Tooltip>
+                }
+              >
+                {count}
+              </WrapperTag>
+
               <IconButtonGroup>
                 <IconButton
                   data-cy={`${entry.contentType}.${locale.code}.translate`}
