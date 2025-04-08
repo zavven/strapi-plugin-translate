@@ -264,14 +264,15 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         })) as BatchTranslateJob[]
 
       const collectionName = strapi.contentTypes[contentType].collectionName
+      const isDraftAndPublish = strapi.contentTypes[contentType].options?.draftAndPublish || false
 
+      let totalQuery = strapi.db.connection(collectionName)
+        .select('locale').count('* as count').groupBy('locale');
+      if (isDraftAndPublish) {
+        totalQuery = totalQuery.whereNull('published_at');
+      }
       // use raw query to get the total of documents group by locale
-      const totalRows: TotalRows = await strapi.db
-        .connection(collectionName)
-        .select('locale')
-        .count('* as count')
-        .whereNull('published_at')
-        .groupBy('locale');
+      const totalRows: TotalRows = await totalQuery;
       const totalMap = new Map(totalRows.map(row => [row.locale, parseInt(row.count)]));
       const totals = locales.map(({ code }) => totalMap.get(code) || 0);
 
@@ -283,8 +284,10 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         .join({ t2: collectionName }, function () {
           this.on('t1.document_id', '=', 't2.document_id')
             .andOn('t1.locale', '!=', 't2.locale')
-            .andOnNull('t1.published_at')
-            .andOnNull('t2.published_at');
+          if (isDraftAndPublish) {
+            this.andOnNull('t1.published_at')
+              .andOnNull('t2.published_at');
+          }
         })
         .groupBy('t1.locale', 't2.locale');
       const translatedCountsMap = new Map();
@@ -303,7 +306,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         const allTranslated = translatedCounts.every((translated) => translated);
         return allTranslated;
       });
-  
+
       // create report
       const localeReports: Record<string, SingleLocaleTranslationReport> = {}
       locales.forEach(({ code }, index) => {
@@ -324,7 +327,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
       localizedContentTypes.map((contentType) => {
         return getContentTypeReport(contentType)
       }
-    ))
+      ))
 
     return { contentTypes: reports, locales }
   },
