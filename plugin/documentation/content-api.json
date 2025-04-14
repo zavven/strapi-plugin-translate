@@ -372,31 +372,25 @@
       },
       "TranslateBatchTranslateJobRequest": {
         "type": "object",
-        "required": ["data"],
+        "required": ["contentType", "sourceLocale", "targetLocale"],
         "properties": {
-          "data": {
-            "required": ["contentType", "sourceLocale", "targetLocale"],
-            "type": "object",
-            "properties": {
-              "contentType": {
-                "type": "string"
-              },
-              "sourceLocale": {
-                "type": "string"
-              },
-              "targetLocale": {
-                "type": "string"
-              },
-              "entityIds": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "autoPublish": {
-                "type": "boolean"
-              }
+          "contentType": {
+            "type": "string"
+          },
+          "sourceLocale": {
+            "type": "string"
+          },
+          "targetLocale": {
+            "type": "string"
+          },
+          "entityIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
+          },
+          "autoPublish": {
+            "type": "boolean"
           }
         }
       },
@@ -554,33 +548,28 @@
       },
       "TranslateEntityRequest": {
         "type": "object",
-        "required": ["contentType", "sourceLocale", "targetLocale"],
+        "required": ["contentType", "sourceLocale", "targetLocale", "documentId"],
         "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "contentType": {
-                "type": "string"
-              },
-              "sourceLocale": {
-                "type": "string"
-              },
-              "targetLocale": {
-                "type": "string"
-              },
-              "documentId": {
-                "type": "string"
-              },
-              "publish": {
-                "type": "boolean"
-              },
-              "create": {
-                "type": "boolean"
-              },
-              "updateExisting": {
-                "type": "boolean"
-              }
-            }
+          "contentType": {
+            "type": "string"
+          },
+          "sourceLocale": {
+            "type": "string"
+          },
+          "targetLocale": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "publish": {
+            "type": "boolean"
+          },
+          "create": {
+            "type": "boolean"
+          },
+          "updateExisting": {
+            "type": "boolean"
           }
         }
       },
@@ -588,28 +577,23 @@
         "type": "object",
         "required": ["updatedEntryIDs", "sourceLocale"],
         "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "sourceLocale": {
-                "type": "string"
-              },
-              "targetLocales": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "updatedEntryIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "autoPublish": {
-                "type": "boolean"
-              }
+          "sourceLocale": {
+            "type": "string"
+          },
+          "targetLocales": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
+          },
+          "updatedEntryIDs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "autoPublish": {
+            "type": "boolean"
           }
         }
       },
