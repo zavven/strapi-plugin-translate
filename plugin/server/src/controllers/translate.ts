@@ -311,7 +311,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
         contentTypeSchema
       )
 
-      sum = +(await getService('translate').estimateUsage({
+      sum += (await getService('translate').estimateUsage({
         fieldsToTranslate,
         data: fullyPopulatedData,
       }))
