@@ -285,12 +285,14 @@ export class BatchTranslateJobExecutor {
     }
     switch (this.status) {
       case 'paused':
-        throw new Error('Job was paused')
+        console.error('Job was paused')
+        break
       case 'cancelled':
-        throw new Error('Job was cancelled')
+        console.error('Job was cancelled')
+        break
       case 'failed':
-        throw new Error('Translation of an entity failed')
-
+        console.error('Translation of an entity failed')
+        break
       default:
         break
     }
