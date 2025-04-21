@@ -32,7 +32,7 @@ const provider: TranslateProvider = {
 
     const localeMap = typeof providerOptions.localeMap === 'object' ? providerOptions.localeMap : {}
 
-    const limiter = new Bottleneck({ minTime: 1000 / QPS_LIMIT, maxConcurrent: 5 })
+    const limiter = new Bottleneck({ minTime: 1000 / QPS_LIMIT, maxConcurrent: 50 })
 
     type TranslateChunk = typeof client.translateChunk
 
